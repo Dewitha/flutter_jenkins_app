@@ -3,11 +3,11 @@ pipeline {
 
     environment {
         FLUTTER_HOME = '/var/lib/jenkins/flutter'
-        PATH = "/var/lib/jenkins/flutter/bin:${env.PATH}"
+        ANDROID_HOME = '/var/lib/jenkins/android-sdk'
+        PATH = "/var/lib/jenkins/flutter/bin:/var/lib/jenkins/android-sdk/cmdline-tools/latest/bin:/var/lib/jenkins/android-sdk/platform-tools:${env.PATH}"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo 'Ambil kode dari GitHub...'
@@ -17,28 +17,24 @@ pipeline {
 
         stage('Flutter Version') {
             steps {
-                echo 'Cek versi Flutter...'
                 sh '/var/lib/jenkins/flutter/bin/flutter --version'
             }
         }
 
         stage('Flutter Install Dependencies') {
             steps {
-                echo 'flutter pub get...'
                 sh '/var/lib/jenkins/flutter/bin/flutter pub get'
             }
         }
 
         stage('Flutter Analyze') {
             steps {
-                echo 'Analisis kode...'
                 sh '/var/lib/jenkins/flutter/bin/flutter analyze'
             }
         }
 
         stage('Flutter Test') {
             steps {
-                echo 'Jalankan unit tests...'
                 sh '/var/lib/jenkins/flutter/bin/flutter test'
             }
         }
@@ -52,7 +48,6 @@ pipeline {
 
         stage('Archive APK') {
             steps {
-                echo 'Simpan APK...'
                 archiveArtifacts artifacts: 'build/app/outputs/flutter-apk/app-release.apk',
                                  fingerprint: true
             }
@@ -60,7 +55,7 @@ pipeline {
     }
 
     post {
-        success { echo 'BUILD BERHASIL!' }
+        success { echo 'BUILD BERHASIL! APK siap didownload.' }
         failure { echo 'BUILD GAGAL - cek log.' }
     }
 }
