@@ -46,8 +46,10 @@ def create_user(u: UserCreate):
     conn = sqlite3.connect(DB_PATH)
     try:
         now = datetime.now().isoformat()
-        cur = conn.execute("INSERT INTO users(name,email,created_at) VALUES(?,?,?)",
-                           (u.name, u.email, now))
+        cur = conn.execute(
+            "INSERT INTO users(name,email,created_at) VALUES(?,?,?)",
+            (u.name, u.email, now)
+        )
         conn.commit()
         return {"id": cur.lastrowid, "name": u.name, "email": u.email, "created_at": now}
     except sqlite3.IntegrityError:
@@ -64,10 +66,3 @@ def delete_user(uid: int):
     if cur.rowcount == 0:
         raise HTTPException(404, "User tidak ditemukan")
     return {"message": "Dihapus"}
-```
-
-### File `backend/requirements.txt`
-```
-fastapi==0.110.0
-uvicorn==0.29.0
-pydantic==2.6.4
